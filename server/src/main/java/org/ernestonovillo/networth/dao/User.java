@@ -18,7 +18,6 @@ public class User {
     @GeneratedValue
     private Long id;
 
-    @SuppressWarnings("unused")
     private String name;
 
     @ManyToOne

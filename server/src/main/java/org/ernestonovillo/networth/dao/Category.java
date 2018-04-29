@@ -7,11 +7,11 @@ import javax.persistence.Id;
 import lombok.Data;
 
 /**
- * Model to represent languages.
+ * Model to represent asset/liability categories.
  */
 @Data
 @Entity
-public class Language {
+public class Category {
 
     @Id
     @GeneratedValue
@@ -20,10 +20,10 @@ public class Language {
     private String name;
 
     @SuppressWarnings("unused")
-    private Language() {
+    private Category() {
     }
 
-    public Language(final String name) {
+    public Category(final String name) {
         this.name = name;
     }
 }

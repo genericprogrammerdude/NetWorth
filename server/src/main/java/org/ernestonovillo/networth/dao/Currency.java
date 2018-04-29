@@ -7,23 +7,25 @@ import javax.persistence.Id;
 import lombok.Data;
 
 /**
- * Model to represent languages.
+ * Model to represent currencies.
  */
 @Data
 @Entity
-public class Language {
+public class Currency {
 
     @Id
     @GeneratedValue
     private Long id;
 
     private String name;
+    private String symbol;
 
     @SuppressWarnings("unused")
-    private Language() {
+    private Currency() {
     }
 
-    public Language(final String name) {
+    public Currency(final String name, final String symbol) {
         this.name = name;
+        this.symbol = symbol;
     }
 }

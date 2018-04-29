@@ -3,7 +3,7 @@ package org.ernestonovillo.networth.dao;
 import org.springframework.data.repository.CrudRepository;
 
 /**
- * CRUD for User.
+ * CRUD for Liability.
  */
-public interface UserRepository extends CrudRepository<User, Long> {
+public interface LiabilityRepository extends CrudRepository<Liability, Long> {
 }
