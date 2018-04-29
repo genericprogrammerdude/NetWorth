@@ -1,9 +1,9 @@
 package org.ernestonovillo.networth.restservice;
 
-import org.ernestonovillo.networth.language.Language;
-import org.ernestonovillo.networth.language.LanguageRepository;
-import org.ernestonovillo.networth.user.User;
-import org.ernestonovillo.networth.user.UserRepository;
+import org.ernestonovillo.networth.dao.Language;
+import org.ernestonovillo.networth.dao.LanguageRepository;
+import org.ernestonovillo.networth.dao.User;
+import org.ernestonovillo.networth.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -33,8 +33,16 @@ public class DataInitializer implements CommandLineRunner {
         languageRepo.save(french);
         languageRepo.save(spanish);
 
-        userRepo.save(new User("John Steinbeck", english));
-        userRepo.save(new User("Jacques Cousteau", french));
-        userRepo.save(new User("Julio Cortazar", spanish));
+        final User john = new User("John Steinbeck", english);
+        final User jacques = new User("Jacques Cousteau", french);
+        final User julio = new User("Julio Cortázar", spanish);
+
+        userRepo.save(john);
+        userRepo.save(jacques);
+        userRepo.save(julio);
+
+        System.out.println(john);
+        System.out.println(jacques);
+        System.out.println(julio);
     }
 }

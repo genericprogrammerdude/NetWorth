@@ -1,4 +1,4 @@
-package org.ernestonovillo.networth.user;
+package org.ernestonovillo.networth.dao;
 
 import org.springframework.data.repository.CrudRepository;
 

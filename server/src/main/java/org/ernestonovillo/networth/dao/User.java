@@ -1,11 +1,9 @@
-package org.ernestonovillo.networth.user;
+package org.ernestonovillo.networth.dao;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-
-import org.ernestonovillo.networth.language.Language;
 
 import lombok.Data;
 

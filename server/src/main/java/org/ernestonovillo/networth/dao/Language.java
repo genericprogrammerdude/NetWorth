@@ -1,4 +1,4 @@
-package org.ernestonovillo.networth.language;
+package org.ernestonovillo.networth.dao;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

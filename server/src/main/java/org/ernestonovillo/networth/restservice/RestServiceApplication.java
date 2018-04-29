@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @EntityScan({ "org.ernestonovillo.networth" })
-@EnableJpaRepositories("org.ernestonovillo.networth")
+@EnableJpaRepositories("org.ernestonovillo.networth.dao")
 public class RestServiceApplication {
 
     public static void main(String[] args) {
