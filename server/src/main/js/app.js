@@ -32,10 +32,21 @@ class UserList extends React.Component{
                 <tbody>
                     <tr>
                         <th>Name</th>
+                        <th>Language</th>
                     </tr>
                     {users}
                 </tbody>
             </table>
+        )
+    }
+}
+
+class Language extends React.Component{
+    render() {
+        return (
+            <tr>
+                <td>{this.props.language.name}</td>
+            </tr>
         )
     }
 }
@@ -45,6 +56,8 @@ class User extends React.Component{
         return (
             <tr>
                 <td>{this.props.user.name}</td>
+                <td>some crap</td>
+                <td>{this.props.user.language}</td>
             </tr>
         )
     }
