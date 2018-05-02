@@ -88,6 +88,7 @@ class User extends React.Component{
         return (
             <tr>
                 <td><a href={"/networth/" + this.props.user.id}>{this.props.user.name}</a></td>
+                <td><ViewUserNetWorth link={"/networth/" + this.props.user.id}/></td>
                 <td><a href={this.props.language}>link</a></td>
             </tr>
         )
@@ -126,27 +127,32 @@ class Language extends React.Component{
     }
 }
 
-class Toggle extends React.Component {
+class ViewUserNetWorth extends React.Component {
     constructor(props) {
-      super(props);
-      this.state = {isToggleOn: true};
+        super(props);
+        this.state = {
+              isToggleOn: true,
+              link: props.link
+        }
 
-      // This binding is necessary to make `this` work in the callback
-      this.handleClick = this.handleClick.bind(this);
+        // This binding is necessary to make `this` work in the callback
+        this.handleClick = this.handleClick.bind(this);
     }
 
     handleClick() {
-      this.setState(prevState => ({
-        isToggleOn: !prevState.isToggleOn
-      }));
+        console.log(this.state.link);
+        this.setState(prevState => ({
+            prevState,
+            isToggleOn: !prevState.isToggleOn
+        }));
     }
 
     render() {
-      return (
-        <button onClick={this.handleClick}>
-          {this.state.isToggleOn ? 'ON' : 'OFF'}
-        </button>
-      );
+        return (
+            <button onClick={this.handleClick}>
+                {this.state.isToggleOn ? 'ON' : 'OFF'}
+            </button>
+        );
     }
   }
 
