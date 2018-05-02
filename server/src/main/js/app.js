@@ -32,34 +32,39 @@ class Main extends React.Component {
     }
 }
 
+/**
+ * Top component to handle requests for net worth data and subsequent rendering.
+ */
 class NetWorth extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {netWorthData: null};
     }
     
     componentDidUpdate(prevProps, prevState, snapshot) {
         const link = this.props.link;
-        if (link !== prevProps.link) {
-            console.log("NetWorth.componentWillReceiveProps(): " + link);
+        if (link && link !== prevProps.link) {
+            axios.get('/users').then(response => this.setState((prevState, props) => {
+                return {prevState, netWorthData: response.data._embedded.users}
+            }));
+            /*
             axios.get(link).then(response => this.setState((prevState, props) => {
                 console.log("NetWorth.componentWillReceiveProps(): " + response.data._embedded);
                 return {assets: response.data._embedded}
             }));
+            */
         }
     }
 
     render() {
-        const link = this.props.link;
-
-        if (link) {
-            return <p>NetWorthData</p>
-        } else {
-            return <div />;
-        }
+        return <NetWorthData data = {this.state.netWorthData} />
     }
 }
  
+/**
+ * Top component to handle requests for user data and subsequent rendering.
+ */
 class Users extends React.Component {
 
     constructor(props) {
@@ -68,21 +73,13 @@ class Users extends React.Component {
     }
 
     componentDidMount() {
-        axios.get('/users').then(response => this.setState((prevState, props) => {
+        axios.get("/users").then(response => this.setState((prevState, props) => {
             return {prevState, users: response.data._embedded.users}
         }));
     }
 
     render() {
-        return (
-            <UserList users={this.state.users} onUserClick = {this.props.onUserClick} />
-        )
-    }
-}
-
-class UserList extends React.Component{
-    render() {
-        var users = this.props.users.map(user =>
+        var users = this.state.users.map(user =>
             <User
                 key = {user.id}
                 user = {user}
@@ -114,13 +111,13 @@ class User extends React.Component{
         return (
             <tr>
                 <td>{this.props.user.name}</td>
-                <td><ViewUserNetWorth link = {"/networth/" + this.props.user.id} onUserClick = {this.props.onUserClick} /></td>
+                <td><ViewUserNetWorthButton link = {"/networth/" + this.props.user.id} onUserClick = {this.props.onUserClick} /></td>
             </tr>
         )
     }
 }
 
-class ViewUserNetWorth extends React.Component {
+class ViewUserNetWorthButton extends React.Component {
 
     constructor(props) {
         super(props);
