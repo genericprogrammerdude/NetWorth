@@ -1,18 +1,21 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-const client = require('./client');
+const axios = require('axios');
 
 class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {users: []};
+        this.state = {users: [], languages: []};
     }
 
-    componentDidMount() {
-        client({method: 'GET', path: '/users'}).done(response => {
-            this.setState({users: response.entity._embedded.users});
-        });
+    componentWillMount() {
+        axios.get('/users').then(response => this.setState((prevState, props) => {
+            return {prevState, users: response.data._embedded.users}
+        }));
+        axios.get('/languages').then(response => this.setState((prevState, props) => {
+            return {prevState, languages: response.data._embedded.languages}
+        }));
     }
 
     render() {
@@ -25,8 +28,11 @@ class App extends React.Component {
 class UserList extends React.Component{
     render() {
         var users = this.props.users.map(user =>
-            <User key={user._links.self.href} user={user}/>
+            <User key={user._links.self.href} user={user} language={user._links.language.href}/>
         );
+
+        console.log(this.props);
+
         return (
             <table>
                 <tbody>
@@ -56,8 +62,7 @@ class User extends React.Component{
         return (
             <tr>
                 <td>{this.props.user.name}</td>
-                <td>some crap</td>
-                <td>{this.props.user.language}</td>
+                <td>{this.props.language}</td>
             </tr>
         )
     }
