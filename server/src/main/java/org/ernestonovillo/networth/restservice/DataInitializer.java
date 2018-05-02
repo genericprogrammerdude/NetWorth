@@ -86,7 +86,7 @@ public class DataInitializer implements CommandLineRunner {
         final Asset investment1 = new Asset("Investment 1", 5000.0, cad, cash, john);
         final Asset investment2 = new Asset("Investment 2", 60000.0, cad, cash, john);
         final Asset investment3 = new Asset("Investment 3", 30000.0, cad, cash, john);
-        final Asset investment4 = new Asset("Investment 4", 50000.0, cad, cash, john);
+        final Asset investment4 = new Asset("Investment 4", 50000.0, cad, cash, julio);
         final Asset investment5 = new Asset("Investment 5", 24000.0, cad, cash, john);
         final Asset primary = new Asset("Primary Home", 455000.0, cad, longTermAsset, john);
         final Asset secondary = new Asset("Second Home", 1564321.0, cad, longTermAsset, john);
