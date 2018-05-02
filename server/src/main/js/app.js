@@ -5,56 +5,77 @@ const axios = require('axios');
 
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
-const Main = () => (
-    <main>
-        <Switch>
-            <Route exact path='/' component={App}/>
-            <Route path='/networth/:number' component={NetWorth}/>
-        </Switch>
-    </main>
-);
+/**
+ * Root component.
+ */
+class Main extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.handleUserClick = this.handleUserClick.bind(this);
+        this.state = {userLink: null};
+    }
+
+    handleUserClick(link) {
+        this.setState({userLink: link});
+    }
+
+    render() {
+        const userLink = this.state.userLink;
+
+        return (
+            <div>
+                <Users onUserClick = {this.handleUserClick} />
+                <NetWorth link = {userLink} />
+            </div>
+        );
+    }
+}
 
 class NetWorth extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log("NetWorth: " + window.location.href);
-        this.state = {users: [], languages: []};
     }
-
-    componentWillMount() {
-        axios.get('/languages').then(response => this.setState((prevState, props) => {
-            return {languages: response.data._embedded.languages}
-        }));
+    
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        const link = this.props.link;
+        if (link !== prevProps.link) {
+            console.log("NetWorth.componentWillReceiveProps(): " + link);
+            axios.get(link).then(response => this.setState((prevState, props) => {
+                console.log("NetWorth.componentWillReceiveProps(): " + response.data._embedded);
+                return {assets: response.data._embedded}
+            }));
+        }
     }
 
     render() {
-        return (
-            <LanguageList languages={this.state.languages}/>
-        )
+        const link = this.props.link;
+
+        if (link) {
+            return <p>NetWorthData</p>
+        } else {
+            return <div />;
+        }
     }
 }
  
-class App extends React.Component {
+class Users extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log("App: " + props);
-        this.state = {users: [], languages: []};
+        this.state = {users: []};
     }
 
-    componentWillMount() {
+    componentDidMount() {
         axios.get('/users').then(response => this.setState((prevState, props) => {
             return {prevState, users: response.data._embedded.users}
-        }));
-        axios.get('/languages').then(response => this.setState((prevState, props) => {
-            return {prevState, languages: response.data._embedded.languages}
         }));
     }
 
     render() {
         return (
-            <UserList users={this.state.users}/>
+            <UserList users={this.state.users} onUserClick = {this.props.onUserClick} />
         )
     }
 }
@@ -63,18 +84,18 @@ class UserList extends React.Component{
     render() {
         var users = this.props.users.map(user =>
             <User
-                key={user.id}
-                user={user}
-                link={user._links.self.href}
-                language={user._links.language.href}/>
+                key = {user.id}
+                user = {user}
+                link = {user._links.self.href}
+                language = {user._links.language.href}
+                onUserClick = {this.props.onUserClick} />
         );
 
         return (
             <table>
                 <tbody>
                     <tr>
-                        <th>Name</th>
-                        <th>Language</th>
+                        <th colSpan="2">Name</th>
                     </tr>
                     {users}
                 </tbody>
@@ -84,55 +105,27 @@ class UserList extends React.Component{
 }
 
 class User extends React.Component{
+    
+    constructor(props) {
+        super(props);
+    }
+
     render() {
         return (
             <tr>
-                <td><a href={"/networth/" + this.props.user.id}>{this.props.user.name}</a></td>
-                <td><ViewUserNetWorth link={"/networth/" + this.props.user.id}/></td>
-                <td><a href={this.props.language}>link</a></td>
-            </tr>
-        )
-    }
-}
-
-class LanguageList extends React.Component{
-    render() {
-        var languages = this.props.languages.map(language =>
-            <Language
-                key={language.id}
-                language={language}
-                link={language._links.self.href}/>
-        );
-
-        return (
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Name</th>
-                    </tr>
-                    {languages}
-                </tbody>
-            </table>
-        )
-    }
-}
-
-class Language extends React.Component{
-    render() {
-        return (
-            <tr>
-                <td><a href={this.props.language}>link</a></td>
+                <td>{this.props.user.name}</td>
+                <td><ViewUserNetWorth link = {"/networth/" + this.props.user.id} onUserClick = {this.props.onUserClick} /></td>
             </tr>
         )
     }
 }
 
 class ViewUserNetWorth extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
-              isToggleOn: true,
-              link: props.link
+            link: props.link
         }
 
         // This binding is necessary to make `this` work in the callback
@@ -140,21 +133,18 @@ class ViewUserNetWorth extends React.Component {
     }
 
     handleClick() {
-        console.log(this.state.link);
-        this.setState(prevState => ({
-            prevState,
-            isToggleOn: !prevState.isToggleOn
-        }));
+        this.props.onUserClick(this.state.link);
     }
 
     render() {
         return (
-            <button onClick={this.handleClick}>
-                {this.state.isToggleOn ? 'ON' : 'OFF'}
+            <button onClick = {this.handleClick}>
+                {"View Net Worth"}
             </button>
         );
     }
-  }
+}
+
 
 ReactDOM.render(
         (<BrowserRouter>
