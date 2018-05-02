@@ -29,13 +29,11 @@ class UserList extends React.Component{
     render() {
         var users = this.props.users.map(user =>
             <User
-                key={user._links.self.href}
+                key={user.id}
                 user={user}
                 link={user._links.self.href}
                 language={user._links.language.href}/>
         );
-
-        console.log(this.props);
 
         return (
             <table>
@@ -65,7 +63,7 @@ class User extends React.Component{
     render() {
         return (
             <tr>
-                <td><a href={this.props.link + "/net-worth"}>{this.props.user.name}</a></td>
+                <td><a href={"/net-worth/" + this.props.user.id}>{this.props.user.name}</a></td>
                 <td><a href={this.props.language}>link</a></td>
             </tr>
         )
