@@ -27,12 +27,7 @@ public class NetWorthController {
         return "index";
     }
 
-    @GetMapping(value = "/networth")
-    public String getNetWorthData() {
-        return "networth";
-    }
-
-    @GetMapping(value = "/networth/{id}", produces = "application/json")
+    @GetMapping(value = "/networth/{id}")
     @ResponseBody
     public NetWorthData getNetWorthData(@PathVariable("id") long id) {
         return new NetWorthData(userRepo.getAssets(id), userRepo.getLiabilities(id));

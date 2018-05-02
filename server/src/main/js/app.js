@@ -1,12 +1,11 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-const ReactRouterDOM = require('react-router-dom');
 const axios = require('axios');
 
 import { Switch, Route, BrowserRouter } from 'react-router-dom';
 
 /**
- * Root component.
+ * Root component. Needed to allow NetWorthViewButton to lift state up and notify the NetWorth component. 
  */
 class Main extends React.Component {
 
@@ -45,23 +44,35 @@ class NetWorth extends React.Component {
     componentDidUpdate(prevProps, prevState, snapshot) {
         const link = this.props.link;
         if (link && link !== prevProps.link) {
-            axios.get('/users').then(response => this.setState((prevState, props) => {
-                return {prevState, netWorthData: response.data._embedded.users}
-            }));
-            /*
             axios.get(link).then(response => this.setState((prevState, props) => {
-                console.log("NetWorth.componentWillReceiveProps(): " + response.data._embedded);
-                return {assets: response.data._embedded}
+                console.log("NetWorth.response: " + response.data.netWorth);
+                return {netWorthData: response.data}
             }));
-            */
         }
     }
 
     render() {
-        return <NetWorthData data = {this.state.netWorthData} />
+        if (this.state.netWorthData) {
+            console.log("NetWorth.render(): " + this.state.netWorthData.netWorth);
+        }
+        return <div />
     }
 }
  
+/**
+ * UI representation of the NetWorthData stream as received from get request.
+ */
+class NetWorthData extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    render() {
+        return <div />
+    }
+}
+
 /**
  * Top component to handle requests for user data and subsequent rendering.
  */
@@ -101,6 +112,9 @@ class Users extends React.Component {
     }
 }
 
+/**
+ * UI representation of a User.
+ */
 class User extends React.Component{
     
     constructor(props) {
@@ -117,6 +131,9 @@ class User extends React.Component{
     }
 }
 
+/**
+ * Button to select which user's net worth will be shown.
+ */
 class ViewUserNetWorthButton extends React.Component {
 
     constructor(props) {
@@ -144,9 +161,6 @@ class ViewUserNetWorthButton extends React.Component {
 
 
 ReactDOM.render(
-        (<BrowserRouter>
-            <Main />
-        </BrowserRouter>)
-        ,
+        <Main />,
         document.getElementById('react')
 )

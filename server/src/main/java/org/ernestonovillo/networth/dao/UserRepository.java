@@ -19,7 +19,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
      *
      * @return A list of Asset instances.
      */
-    @Query("SELECT asset FROM Asset asset WHERE asset.user.id = :userId")
+    @Query("SELECT asset FROM Asset asset WHERE asset.user.id = :userId ORDER BY asset.category.name ASC")
     public List<Asset> getAssets(@Param("userId") Long userId);
 
     /**
@@ -30,6 +30,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
      *
      * @return A list of Asset instances.
      */
-    @Query("SELECT liability FROM Liability liability WHERE liability.user.id = :userId")
+    @Query("SELECT liability FROM Liability liability WHERE liability.user.id = :userId ORDER BY liability.category.name ASC")
     public List<Liability> getLiabilities(@Param("userId") Long userId);
 }
