@@ -1,5 +1,6 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
+const ReactRouterDOM = require('react-router-dom');
 const axios = require('axios');
 
 class App extends React.Component {
@@ -49,16 +50,6 @@ class UserList extends React.Component{
     }
 }
 
-class Language extends React.Component{
-    render() {
-        return (
-            <tr>
-                <td>{this.props.language.name}</td>
-            </tr>
-        )
-    }
-}
-
 class User extends React.Component{
     render() {
         return (
@@ -70,7 +61,11 @@ class User extends React.Component{
     }
 }
 
+import { BrowserRouter } from 'react-router-dom';
+
 ReactDOM.render(
-        <App />,
+        (<BrowserRouter>
+            <App />
+        </BrowserRouter>),
         document.getElementById('react')
 )
