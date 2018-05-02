@@ -28,7 +28,11 @@ class App extends React.Component {
 class UserList extends React.Component{
     render() {
         var users = this.props.users.map(user =>
-            <User key={user._links.self.href} user={user} language={user._links.language.href}/>
+            <User
+                key={user._links.self.href}
+                user={user}
+                link={user._links.self.href}
+                language={user._links.language.href}/>
         );
 
         console.log(this.props);
@@ -61,8 +65,8 @@ class User extends React.Component{
     render() {
         return (
             <tr>
-                <td>{this.props.user.name}</td>
-                <td>{this.props.language}</td>
+                <td><a href={this.props.link + "/net-worth"}>{this.props.user.name}</a></td>
+                <td><a href={this.props.language}>link</a></td>
             </tr>
         )
     }
