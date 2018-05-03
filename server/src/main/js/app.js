@@ -119,8 +119,9 @@ class NetWorth extends React.Component {
     // Get data from the server
     componentDidUpdate(prevProps, prevState, snapshot) {
         const link = this.props.link;
+        const currencyId = this.props.currencyId;
 
-        if (link && link !== prevProps.link) {
+        if (link != null && (link !== prevProps.link || currencyId !== prevProps.currencyId)) {
             axios.get(link + "?currencyId=" + this.props.currencyId).then(response => this.setState((prevState, props) => {
                 return {netWorthData: response.data}
             }));
@@ -163,7 +164,7 @@ class NetWorth extends React.Component {
                 <tbody>
                     <tr>
                         <th colSpan = "2">{data.userName + "'s net worth:"}</th>
-                        <th colSpan = "1">{data.netWorth}</th>
+                        <th colSpan = "1">{parseFloat(data.netWorth).toFixed(2)}</th>
                     </tr>
                     <tr>
                         <th colSpan = "3">Assets</th>
@@ -176,7 +177,7 @@ class NetWorth extends React.Component {
                     {assets}
                     <tr>
                         <th colSpan = "2">Assets Total:</th>
-                        <th colSpan = "1">{data.totalAssets}</th>
+                        <th colSpan = "1">{parseFloat(data.totalAssets).toFixed(2)}</th>
                     </tr>
                     <tr>
                         <th colSpan = "3"></th>
@@ -192,7 +193,7 @@ class NetWorth extends React.Component {
                     {liabilities}
                     <tr>
                         <th colSpan = "2">Liabilities Total:</th>
-                        <th colSpan = "1">{data.totalLiabilities}</th>
+                        <th colSpan = "1">{parseFloat(data.totalLiabilities).toFixed(2)}</th>
                     </tr>
                 </tbody>
             </table>
@@ -211,7 +212,7 @@ class Item extends React.Component {
             <tr>
                 <td>{this.props.category}</td>
                 <td>{this.props.name}</td>
-                <td>{this.props.value}</td>
+                <td>{parseFloat(this.props.value).toFixed(2)}</td>
             </tr>
         )
     }
