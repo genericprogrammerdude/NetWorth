@@ -113,18 +113,29 @@ class NetWorth extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {netWorthData: null};
+        this.state = {netWorthData: null, totalAssetConvertedValue: 0.0, totalLiabilityConvertedValue: 0.0};
+
+        this.addConvertedAssetValue = this.addConvertedAssetValue.bind(this);
+        this.addConvertedLiabilityValue = this.addConvertedLiabilityValue.bind(this);
     }
 
     // Get data from the server
     componentDidUpdate(prevProps, prevState, snapshot) {
         const link = this.props.link;
-        
+
         if (link && link !== prevProps.link) {
             axios.get(link).then(response => this.setState((prevState, props) => {
                 return {netWorthData: response.data}
             }));
         }
+    }
+    
+    addConvertedAssetValue(value) {
+        this.setState({totalAssetConvertedValue: this.state.totalAssetConvertedValue + value});
+    }
+
+    addConvertedLiabilityValue(value) {
+        this.setState({totalLiabilityConvertedValue: this.state.totalLiabilityConvertedValue + value});
     }
 
     // Display net worth information
@@ -148,7 +159,8 @@ class NetWorth extends React.Component {
                 originalValue = {asset.value}
                 originalCurrency = {asset.currency.id}
                 originalCurrencySymbol = {asset.currency.symbol}
-                convertedCurrency = {this.props.currencyId} />
+                convertedCurrency = {this.props.currencyId}
+                addConvertedValue = {this.addConvertedAssetValue} />
         );
 
         // Build list of liabilities
@@ -160,8 +172,13 @@ class NetWorth extends React.Component {
                 originalValue = {liability.value}
                 originalCurrency = {liability.currency.id}
                 originalCurrencySymbol = {liability.currency.symbol}
-                convertedCurrency = {this.props.currencyId} />
+                convertedCurrency = {this.props.currencyId}
+                addConvertedValue = {this.addConvertedLiabilityValue} />
         );
+
+        const netWorth = (this.state.totalAssetConvertedValue - this.state.totalLiabilityConvertedValue).toFixed(2);
+        const totalAssets = this.state.totalAssetConvertedValue.toFixed(2);
+        const totalLiabilities = this.state.totalLiabilityConvertedValue.toFixed(2);
 
         // And show them
         return (
@@ -169,7 +186,7 @@ class NetWorth extends React.Component {
                 <tbody>
                     <tr>
                         <th colSpan = "3">{data.userName + "'s net worth:"}</th>
-                        <th colSpan = "1">{data.netWorth}</th>
+                        <th colSpan = "1">{netWorth}</th>
                     </tr>
                     <tr>
                         <th colSpan = "4">Assets</th>
@@ -183,7 +200,7 @@ class NetWorth extends React.Component {
                     {assets}
                     <tr>
                         <th colSpan = "3">Assets Total:</th>
-                        <th colSpan = "1">{data.totalAssets}</th>
+                        <th colSpan = "1">{totalAssets}</th>
                     </tr>
                     <tr>
                         <th colSpan = "4"></th>
@@ -200,7 +217,7 @@ class NetWorth extends React.Component {
                     {liabilities}
                     <tr>
                         <th colSpan = "3">Liabilities Total:</th>
-                        <th colSpan = "1">{data.totalLiabilities}</th>
+                        <th colSpan = "1">{totalLiabilities}</th>
                     </tr>
                 </tbody>
             </table>
@@ -217,7 +234,7 @@ class Item extends React.Component {
         super(props);
         this.state = {convertedValue: 0};
     }
-
+    
     componentDidMount() {
         if (this.props.originalCurrency != this.props.convertedCurrency) {
             // Need to convert
@@ -227,6 +244,7 @@ class Item extends React.Component {
                 const originalValue = parseFloat(this.props.originalValue);
                 const rate = parseFloat(response.data.rate);
                 const converted = originalValue * rate;
+                this.props.addConvertedValue(converted);
                 return {prevState, convertedValue: converted};r
             }));
         } else {
