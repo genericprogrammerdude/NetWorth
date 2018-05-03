@@ -27,6 +27,10 @@ public class User {
     private User() {
     }
 
+    public User(String name) {
+        this.name = name;
+    }
+
     public User(String name, Language language) {
         this.name = name;
         this.language = language;

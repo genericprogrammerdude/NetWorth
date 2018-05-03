@@ -9,11 +9,13 @@ import org.ernestonovillo.networth.dao.ExchangeRateRepository;
 import org.ernestonovillo.networth.dao.Liability;
 import org.ernestonovillo.networth.dao.LiabilityRepository;
 import org.ernestonovillo.networth.dao.NetWorthData;
+import org.ernestonovillo.networth.dao.User;
 import org.ernestonovillo.networth.dao.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -76,5 +78,11 @@ public class NetWorthController {
             liability.setValue(value);
             liabilityRepo.save(liability);
         });
+    }
+
+    @PostMapping(value = "/adduser", params = { "name" })
+    @ResponseBody
+    public void addUser(@RequestParam("name") String name) {
+        userRepo.save(new User(name));
     }
 }

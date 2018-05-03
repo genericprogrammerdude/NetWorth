@@ -25,12 +25,20 @@ class Main extends React.Component {
         this.setState({currencyId: id});
     }
 
+    handleAddDataClick(event) {
+        console.log("add data");
+    }
+
     render() {
         const userLink = this.state.userLink;
         const currencyId = this.state.currencyId;
 
         return (
             <div>
+                <button onClick = {this.handleAddDataClick}>
+                    {"Add Data"}
+                </button>
+                <p />
                 <CurrencySelector onCurrencySelect = {this.handleCurrencySelection} />
                 <p />
                 <Users onUserClick = {this.handleUserClick} currencyId = {currencyId}/>
@@ -292,7 +300,7 @@ class Users extends React.Component {
             <table>
                 <tbody>
                     <tr>
-                        <th colSpan="2">Name</th>
+                        <th colSpan="3">Name</th>
                     </tr>
                     {users}
                 </tbody>
