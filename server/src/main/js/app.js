@@ -35,7 +35,7 @@ class Main extends React.Component {
                 <p />
                 <Users onUserClick = {this.handleUserClick} currencyId = {currencyId}/>
                 <p />
-                <NetWorth link = {userLink} currencyId = {currencyId} />
+                <NetWorth link = {userLink} currencyId = {currencyId} newValue = {false} />
             </div>
         );
     }
@@ -113,17 +113,24 @@ class NetWorth extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {netWorthData: null};
+        this.state = {netWorthData: null, newValue: false};
+        
+        this.handleNewValue = this.handleNewValue.bind(this);
+    }
+    
+    handleNewValue() {
+        this.setState({newValue: true});
     }
 
     // Get data from the server
     componentDidUpdate(prevProps, prevState, snapshot) {
         const link = this.props.link;
         const currencyId = this.props.currencyId;
+        const newValue = this.state.newValue;
 
-        if (link != null && (link !== prevProps.link || currencyId !== prevProps.currencyId)) {
+        if (link != null && (link !== prevProps.link || currencyId !== prevProps.currencyId || newValue)) {
             axios.get(link + "?currencyId=" + this.props.currencyId).then(response => this.setState((prevState, props) => {
-                return {netWorthData: response.data}
+                return {netWorthData: response.data, newValue: false}
             }));
         }
     }
@@ -144,15 +151,18 @@ class NetWorth extends React.Component {
         const assets = data.assets.map(asset =>
             <Item
                 key = {asset.id}
+                link = {"/asset?id=" + asset.id}
                 category = {asset.category.name}
                 name = {asset.name}
-                value = {asset.value} />
+                value = {asset.value}
+                onNewValue = {this.handleNewValue} />
         );
 
         // Build list of liabilities
         const liabilities = data.liabilities.map(liability =>
             <Item
                 key = {liability.id}
+                link = {"/liability?id=" + liability.id}
                 category = {liability.category.name}
                 name = {liability.name}
                 value = {liability.value} />
@@ -205,14 +215,41 @@ class NetWorth extends React.Component {
  * UI representation of an Asset or Liability. They both look the same, so why not share?
  */
 class Item extends React.Component {
+    
+    constructor(props) {
+        super(props);
+        this.state = {value: this.props.value};
+        
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
 
+    handleChange(event) {
+        this.setState({value: event.target.value});
+    }
+    
+    handleSubmit(event) {
+        if (!isNaN(this.state.value)) {
+            const f = parseFloat(this.state.value);
+            if (!isNaN(f) && f >= 0.0) {
+                axios.put(this.props.link + "&value=" + f).then(response => this.props.onNewValue());
+                console.log("Save " + f);
+            }
+        }
+        event.preventDefault();
+    }
 
     render() {
         return (
             <tr>
                 <td>{this.props.category}</td>
                 <td>{this.props.name}</td>
-                <td>{parseFloat(this.props.value).toFixed(2)}</td>
+                <td>
+                    <form onSubmit={this.handleSubmit}>
+                        <input type="text" value={this.state.value} onChange={this.handleChange} />
+                        <input type="submit" value="Save" />
+                    </form>
+                </td>
             </tr>
         )
     }
