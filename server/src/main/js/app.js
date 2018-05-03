@@ -25,19 +25,13 @@ class Main extends React.Component {
         this.setState({currencyId: id});
     }
 
-    handleAddDataClick(event) {
-        console.log("add data");
-    }
-
     render() {
         const userLink = this.state.userLink;
         const currencyId = this.state.currencyId;
 
         return (
             <div>
-                <button onClick = {this.handleAddDataClick}>
-                    {"Add Data"}
-                </button>
+                <a href="/editdata" target="_blank">Edit Data</a>
                 <p />
                 <CurrencySelector onCurrencySelect = {this.handleCurrencySelection} />
                 <p />
