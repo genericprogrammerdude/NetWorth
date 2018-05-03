@@ -1,6 +1,8 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const axios = require('axios');
+const DataEditor = require('./dataEditor')
+
 
 /**
  * Root component. Needed to allow NetWorthViewButton to lift state up and notify the NetWorth component. 
@@ -29,13 +31,13 @@ class Main extends React.Component {
 
         return (
             <div>
-                <a href="/editdata" target="_blank">Edit Data</a>
-                <p />
                 <CurrencySelector onCurrencySelect = {this.handleCurrencySelection} />
                 <p />
                 <Users onUserClick = {this.handleUserClick} currencyId = {currencyId}/>
                 <p />
                 <NetWorth link = {userLink} currencyId = {currencyId} newValue = {false} />
+                <p />
+                <DataEditor.DataEditor />
             </div>
         );
     }
