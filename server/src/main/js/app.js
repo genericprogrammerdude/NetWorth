@@ -2,8 +2,6 @@ const React = require('react');
 const ReactDOM = require('react-dom');
 const axios = require('axios');
 
-import { Switch, Route, BrowserRouter } from 'react-router-dom';
-
 /**
  * Root component. Needed to allow NetWorthViewButton to lift state up and notify the NetWorth component. 
  */
