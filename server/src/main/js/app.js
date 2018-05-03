@@ -165,7 +165,8 @@ class NetWorth extends React.Component {
                 link = {"/liability?id=" + liability.id}
                 category = {liability.category.name}
                 name = {liability.name}
-                value = {liability.value} />
+                value = {liability.value}
+                onNewValue = {this.handleNewValue} />
         );
 
         // And show them
@@ -233,10 +234,15 @@ class Item extends React.Component {
             const f = parseFloat(this.state.value);
             if (!isNaN(f) && f >= 0.0) {
                 axios.put(this.props.link + "&value=" + f).then(response => this.props.onNewValue());
-                console.log("Save " + f);
             }
         }
         event.preventDefault();
+    }
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps != this.props) {
+            this.setState({value: this.props.value});
+        }
     }
 
     render() {
@@ -246,7 +252,7 @@ class Item extends React.Component {
                 <td>{this.props.name}</td>
                 <td>
                     <form onSubmit={this.handleSubmit}>
-                        <input type="text" value={this.state.value} onChange={this.handleChange} />
+                        <input type="text" value={parseFloat(this.state.value).toFixed(2)} onChange={this.handleChange} />
                         <input type="submit" value="Save" />
                     </form>
                 </td>
