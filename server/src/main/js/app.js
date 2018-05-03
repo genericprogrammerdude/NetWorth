@@ -18,16 +18,72 @@ class Main extends React.Component {
     handleUserClick(link) {
         this.setState({userLink: link});
     }
+    
+    handleCurrencySelection(id) {
+        this.setState({currencyId: id});
+    }
 
     render() {
         const userLink = this.state.userLink;
 
         return (
             <div>
+                <CurrencySelector onCurrencySelect = {this.handleCurrencySelection} />
+                <p />
                 <Users onUserClick = {this.handleUserClick} />
                 <p />
                 <NetWorth link = {userLink} />
             </div>
+        );
+    }
+}
+
+/**
+ * Top component to handle currency selection.
+ */
+class CurrencySelector extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {currencies: []};
+    }
+
+    componentDidMount() {
+        axios.get("/currencies").then(response => this.setState((prevState, props) => {
+            return {prevState, currencies: response.data._embedded.currencies}
+        }));
+    }
+    
+    render() {
+        const currencies = this.state.currencies.map(currency =>
+            <Currency
+                key = {currency.id}
+                id = {currency.id}
+                name = {currency.name}
+                symbol = {currency.symbol} />
+        );
+
+        return(
+            <select>
+                {currencies}
+            </select>
+        );
+    }
+}
+
+/**
+ * Representation of a currency object.
+ */
+class Currency extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {id: this.props.id, name: this.props.name, symbol: this.props.symbol};
+    }
+
+    render() {
+        return(
+            <option value={this.state.id}>{this.state.name + " (" + this.state.symbol + ")"}</option>
         );
     }
 }
@@ -47,7 +103,6 @@ class NetWorth extends React.Component {
         const link = this.props.link;
         if (link && link !== prevProps.link) {
             axios.get(link).then(response => this.setState((prevState, props) => {
-                console.log("NetWorth.response: " + response.data.netWorth);
                 return {netWorthData: response.data}
             }));
         }
