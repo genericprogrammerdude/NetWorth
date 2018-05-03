@@ -38,7 +38,8 @@ public class NetWorthData {
      */
     private final String userName;
 
-    public NetWorthData(List<Asset> assets, List<Liability> liabilities, long currencyId) {
+    public NetWorthData(List<Asset> assets, List<Liability> liabilities, long currencyId,
+            ExchangeRateRepository exchangeRateRepo) {
         this.assets = assets;
         this.liabilities = liabilities;
 
@@ -53,13 +54,17 @@ public class NetWorthData {
 
         assets.forEach((asset) -> {
             if (currencyId != asset.getCurrency().getId()) {
-                asset.setValue(1.1);
+                // TODO: Cache these so we don't hit the database any more than necessary
+                final ExchangeRate exchangeRate = exchangeRateRepo.getRate(asset.getCurrency().getId(), currencyId);
+                asset.setValue(asset.getValue() * exchangeRate.getRate());
             }
         });
 
         liabilities.forEach((liability) -> {
             if (currencyId != liability.getCurrency().getId()) {
-                liability.setValue(1.1);
+                // TODO: Cache these so we don't hit the database any more than necessary
+                final ExchangeRate exchangeRate = exchangeRateRepo.getRate(liability.getCurrency().getId(), currencyId);
+                liability.setValue(liability.getValue() * exchangeRate.getRate());
             }
         });
 

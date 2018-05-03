@@ -36,7 +36,8 @@ public class NetWorthController {
     @ResponseBody
     public NetWorthData getNetWorthData(@PathVariable("userId") long userId,
             @RequestParam("currencyId") long currencyId) {
-        return new NetWorthData(userRepo.getAssets(userId), userRepo.getLiabilities(userId), currencyId);
+        return new NetWorthData(userRepo.getAssets(userId), userRepo.getLiabilities(userId), currencyId,
+                exchangeRateRepo);
     }
 
     @RequestMapping(value = "/exchange", params = { "fromId", "toId" })
