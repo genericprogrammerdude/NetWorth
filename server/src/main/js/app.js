@@ -11,8 +11,10 @@ class Main extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {userLink: null, currencyId: null};
+
         this.handleUserClick = this.handleUserClick.bind(this);
-        this.state = {userLink: null};
+        this.handleCurrencySelection = this.handleCurrencySelection.bind(this);
     }
 
     handleUserClick(link) {
@@ -25,6 +27,7 @@ class Main extends React.Component {
 
     render() {
         const userLink = this.state.userLink;
+        const currencyId = this.state.currencyId;
 
         return (
             <div>
@@ -32,7 +35,7 @@ class Main extends React.Component {
                 <p />
                 <Users onUserClick = {this.handleUserClick} />
                 <p />
-                <NetWorth link = {userLink} />
+                <NetWorth link = {userLink} currencyId = {currencyId} />
             </div>
         );
     }
@@ -45,12 +48,27 @@ class CurrencySelector extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {currencies: []};
+        this.state = {currencies: [], currencyId: -1};
+
+        this.handleSelection = this.handleSelection.bind(this);
+    }
+
+    handleSelection(event) {
+        this.setState({currencyId: event.target.value});
+        this.props.onCurrencySelect(event.target.value);
     }
 
     componentDidMount() {
         axios.get("/currencies").then(response => this.setState((prevState, props) => {
-            return {prevState, currencies: response.data._embedded.currencies}
+            // Set the selector's value to the first id in the list
+            let currencyId = -1;
+            const currencies = response.data._embedded.currencies;
+            if (currencies.length > 0) {
+                currencyId = currencies[0].id;
+                this.props.onCurrencySelect(currencyId);
+            }
+
+            return {prevState, currencies: currencies, currencyId: currencyId}
         }));
     }
     
@@ -64,7 +82,7 @@ class CurrencySelector extends React.Component {
         );
 
         return(
-            <select>
+            <select value = {this.state.currencyId} onChange = {this.handleSelection}>
                 {currencies}
             </select>
         );
@@ -101,6 +119,7 @@ class NetWorth extends React.Component {
     // Get data from the server
     componentDidUpdate(prevProps, prevState, snapshot) {
         const link = this.props.link;
+        
         if (link && link !== prevProps.link) {
             axios.get(link).then(response => this.setState((prevState, props) => {
                 return {netWorthData: response.data}
@@ -126,7 +145,10 @@ class NetWorth extends React.Component {
                 key = {asset.id}
                 category = {asset.category.name}
                 name = {asset.name}
-                value = {asset.value} />
+                originalValue = {asset.value}
+                originalCurrency = {asset.currency.id}
+                originalCurrencySymbol = {asset.currency.symbol}
+                convertedCurrency = {this.props.currencyId} />
         );
 
         // Build list of liabilities
@@ -135,7 +157,10 @@ class NetWorth extends React.Component {
                 key = {liability.id}
                 category = {liability.category.name}
                 name = {liability.name}
-                value = {liability.value} />
+                originalValue = {liability.value}
+                originalCurrency = {liability.currency.id}
+                originalCurrencySymbol = {liability.currency.symbol}
+                convertedCurrency = {this.props.currencyId} />
         );
 
         // And show them
@@ -143,36 +168,38 @@ class NetWorth extends React.Component {
             <table>
                 <tbody>
                     <tr>
-                        <th colSpan = "2">{data.userName + "'s net worth:"}</th>
+                        <th colSpan = "3">{data.userName + "'s net worth:"}</th>
                         <th colSpan = "1">{data.netWorth}</th>
                     </tr>
                     <tr>
-                        <th colSpan = "3">Assets</th>
+                        <th colSpan = "4">Assets</th>
                     </tr>
                     <tr>
                         <th>Category</th>
                         <th>Name</th>
-                        <th>Value</th>
+                        <th>Original Value</th>
+                        <th>Converted Value</th>
                     </tr>
                     {assets}
                     <tr>
-                        <th colSpan = "2">Assets Total:</th>
+                        <th colSpan = "3">Assets Total:</th>
                         <th colSpan = "1">{data.totalAssets}</th>
                     </tr>
                     <tr>
-                        <th colSpan = "3"></th>
+                        <th colSpan = "4"></th>
                     </tr>
                     <tr>
-                        <th colSpan = "3">Liabilities</th>
+                        <th colSpan = "4">Liabilities</th>
                     </tr>
                     <tr>
                         <th>Category</th>
                         <th>Name</th>
-                        <th>Value</th>
+                        <th>Original Value</th>
+                        <th>Converted Value</th>
                     </tr>
                     {liabilities}
                     <tr>
-                        <th colSpan = "2">Liabilities Total:</th>
+                        <th colSpan = "3">Liabilities Total:</th>
                         <th colSpan = "1">{data.totalLiabilities}</th>
                     </tr>
                 </tbody>
@@ -186,12 +213,33 @@ class NetWorth extends React.Component {
  */
 class Item extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {convertedValue: 0, exchangeRate: 1.0};
+    }
+
+    componentDidMount() {
+        if (this.props.originalCurrency !== this.props.convertedCurrency) {
+            // Need to convert
+            const url = "/exchange?fromId=" + this.props.originalCurrency + "&toId=" + this.props.convertedCurrency;
+            axios.get(url).then(response => this.setState((prevState, props) => {
+                return {prevState, exchangeRate: response.data.exchangeRate.rate}
+            }));
+            this.setState({convertedValue: this.props.originalValue});
+        } else {
+            this.setState({convertedValue: this.props.originalValue});
+        }
+    }
+
+
     render() {
+        console.log(this.state.exchangeRate);
         return (
             <tr>
                 <td>{this.props.category}</td>
                 <td>{this.props.name}</td>
-                <td>{this.props.value}</td>
+                <td>{this.props.originalValue + " " + this.props.originalCurrencySymbol}</td>
+                <td>{this.state.convertedValue}</td>
             </tr>
         )
     }

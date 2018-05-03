@@ -6,6 +6,8 @@ import org.ernestonovillo.networth.dao.Category;
 import org.ernestonovillo.networth.dao.CategoryRepository;
 import org.ernestonovillo.networth.dao.Currency;
 import org.ernestonovillo.networth.dao.CurrencyRepository;
+import org.ernestonovillo.networth.dao.ExchangeRate;
+import org.ernestonovillo.networth.dao.ExchangeRateRepository;
 import org.ernestonovillo.networth.dao.Language;
 import org.ernestonovillo.networth.dao.LanguageRepository;
 import org.ernestonovillo.networth.dao.Liability;
@@ -25,16 +27,19 @@ public class DataInitializer implements CommandLineRunner {
     private final AssetRepository assetRepo;
     private final CategoryRepository categoryRepo;
     private final CurrencyRepository currencyRepo;
+    private final ExchangeRateRepository exchangeRateRepo;
     private final LanguageRepository languageRepo;
     private final LiabilityRepository liabilityRepo;
     private final UserRepository userRepo;
 
     @Autowired
     public DataInitializer(AssetRepository assetRepo, CategoryRepository categoryRepo, CurrencyRepository currencyRepo,
-            LanguageRepository languageRepo, LiabilityRepository liabilityRepo, UserRepository userRepo) {
+            ExchangeRateRepository exchangeRateRepo, LanguageRepository languageRepo, LiabilityRepository liabilityRepo,
+            UserRepository userRepo) {
         this.assetRepo = assetRepo;
         this.categoryRepo = categoryRepo;
         this.currencyRepo = currencyRepo;
+        this.exchangeRateRepo = exchangeRateRepo;
         this.languageRepo = languageRepo;
         this.liabilityRepo = liabilityRepo;
         this.userRepo = userRepo;
@@ -71,10 +76,16 @@ public class DataInitializer implements CommandLineRunner {
         categoryRepo.save(longTermDebt);
 
         // Currencies
-        final Currency cad = new Currency("Canadian Dollar", "CAD$");
-        final Currency usd = new Currency("US Dollar", "US$");
+        final Currency cad = new Currency("Canadian Dollar", "CAD");
+        final Currency usd = new Currency("US Dollar", "USD");
         currencyRepo.save(cad);
         currencyRepo.save(usd);
+
+        // Exchange rates
+        final ExchangeRate cadToUsd = new ExchangeRate(cad, usd, 0.7);
+        final ExchangeRate usdToCad = new ExchangeRate(usd, cad, 1.3);
+        exchangeRateRepo.save(cadToUsd);
+        exchangeRateRepo.save(usdToCad);
 
         // Assets
         final Asset chequing = new Asset("Chequing", 2000.0, cad, cash, john);
