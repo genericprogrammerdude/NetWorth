@@ -29,7 +29,7 @@ public class NetWorthData {
     private final double totalLiabilities;
 
     /**
-     * The computed net worth.
+     * Computed net worth.
      */
     private final double netWorth;
 
@@ -38,7 +38,7 @@ public class NetWorthData {
      */
     private final String userName;
 
-    public NetWorthData(List<Asset> assets, List<Liability> liabilities) {
+    public NetWorthData(List<Asset> assets, List<Liability> liabilities, long currencyId) {
         this.assets = assets;
         this.liabilities = liabilities;
 
@@ -50,6 +50,18 @@ public class NetWorthData {
         } else {
             this.userName = "";
         }
+
+        assets.forEach((asset) -> {
+            if (currencyId != asset.getCurrency().getId()) {
+                asset.setValue(1.1);
+            }
+        });
+
+        liabilities.forEach((liability) -> {
+            if (currencyId != liability.getCurrency().getId()) {
+                liability.setValue(1.1);
+            }
+        });
 
         this.totalAssets = assets.stream().mapToDouble(Asset::getValue).sum();
         this.totalLiabilities = liabilities.stream().mapToDouble(Liability::getValue).sum();

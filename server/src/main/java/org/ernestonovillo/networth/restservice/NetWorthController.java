@@ -32,10 +32,11 @@ public class NetWorthController {
         return "index";
     }
 
-    @GetMapping(value = "/networth/{id}")
+    @GetMapping(value = "/networth/{userId}", params = { "currencyId" })
     @ResponseBody
-    public NetWorthData getNetWorthData(@PathVariable("id") long id) {
-        return new NetWorthData(userRepo.getAssets(id), userRepo.getLiabilities(id));
+    public NetWorthData getNetWorthData(@PathVariable("userId") long userId,
+            @RequestParam("currencyId") long currencyId) {
+        return new NetWorthData(userRepo.getAssets(userId), userRepo.getLiabilities(userId), currencyId);
     }
 
     @RequestMapping(value = "/exchange", params = { "fromId", "toId" })
