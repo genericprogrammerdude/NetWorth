@@ -215,17 +215,20 @@ class Item extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {convertedValue: 0, exchangeRate: 1.0};
+        this.state = {convertedValue: 0};
     }
 
     componentDidMount() {
-        if (this.props.originalCurrency !== this.props.convertedCurrency) {
+        if (this.props.originalCurrency != this.props.convertedCurrency) {
             // Need to convert
+            // TODO: These queries should be cached locally.
             const url = "/exchange?fromId=" + this.props.originalCurrency + "&toId=" + this.props.convertedCurrency;
             axios.get(url).then(response => this.setState((prevState, props) => {
-                return {prevState, exchangeRate: response.data.exchangeRate.rate}
+                const originalValue = parseFloat(this.props.originalValue);
+                const rate = parseFloat(response.data.rate);
+                const converted = originalValue * rate;
+                return {prevState, convertedValue: converted};r
             }));
-            this.setState({convertedValue: this.props.originalValue});
         } else {
             this.setState({convertedValue: this.props.originalValue});
         }
@@ -233,7 +236,6 @@ class Item extends React.Component {
 
 
     render() {
-        console.log(this.state.exchangeRate);
         return (
             <tr>
                 <td>{this.props.category}</td>
