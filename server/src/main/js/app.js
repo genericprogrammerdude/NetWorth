@@ -25,6 +25,7 @@ class Main extends React.Component {
         return (
             <div>
                 <Users onUserClick = {this.handleUserClick} />
+                <p />
                 <NetWorth link = {userLink} />
             </div>
         );
@@ -40,7 +41,8 @@ class NetWorth extends React.Component {
         super(props);
         this.state = {netWorthData: null};
     }
-    
+
+    // Get data from the server
     componentDidUpdate(prevProps, prevState, snapshot) {
         const link = this.props.link;
         if (link && link !== prevProps.link) {
@@ -51,25 +53,92 @@ class NetWorth extends React.Component {
         }
     }
 
+    // Display net worth information
     render() {
-        if (this.state.netWorthData) {
-            console.log("NetWorth.render(): " + this.state.netWorthData.netWorth);
+        const data = this.state.netWorthData;
+        if (data === null) {
+            return <div />;
         }
-        return <div />
+        if (data.assets.length === 0 && data.assets.length === 0) {
+            return (
+                <p>No data for the selected user.</p>
+            );
+        }
+
+        // Build list of assets
+        const assets = data.assets.map(asset =>
+            <Item
+                key = {asset.id}
+                category = {asset.category.name}
+                name = {asset.name}
+                value = {asset.value} />
+        );
+
+        // Build list of liabilities
+        const liabilities = data.liabilities.map(liability =>
+            <Item
+                key = {liability.id}
+                category = {liability.category.name}
+                name = {liability.name}
+                value = {liability.value} />
+        );
+
+        // And show them
+        return (
+            <table>
+                <tbody>
+                    <tr>
+                        <th colSpan = "2">{data.userName + "'s net worth:"}</th>
+                        <th colSpan = "1">{data.netWorth}</th>
+                    </tr>
+                    <tr>
+                        <th colSpan = "3">Assets</th>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                    {assets}
+                    <tr>
+                        <th colSpan = "2">Assets Total:</th>
+                        <th colSpan = "1">{data.totalAssets}</th>
+                    </tr>
+                    <tr>
+                        <th colSpan = "3"></th>
+                    </tr>
+                    <tr>
+                        <th colSpan = "3">Liabilities</th>
+                    </tr>
+                    <tr>
+                        <th>Category</th>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                    {liabilities}
+                    <tr>
+                        <th colSpan = "2">Liabilities Total:</th>
+                        <th colSpan = "1">{data.totalLiabilities}</th>
+                    </tr>
+                </tbody>
+            </table>
+        );
     }
 }
  
 /**
- * UI representation of the NetWorthData stream as received from get request.
+ * UI representation of an Asset or Liability. They both look the same, so why not share?
  */
-class NetWorthData extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
+class Item extends React.Component {
 
     render() {
-        return <div />
+        return (
+            <tr>
+                <td>{this.props.category}</td>
+                <td>{this.props.name}</td>
+                <td>{this.props.value}</td>
+            </tr>
+        )
     }
 }
 
@@ -90,7 +159,7 @@ class Users extends React.Component {
     }
 
     render() {
-        var users = this.state.users.map(user =>
+        const users = this.state.users.map(user =>
             <User
                 key = {user.id}
                 user = {user}
@@ -116,10 +185,6 @@ class Users extends React.Component {
  * UI representation of a User.
  */
 class User extends React.Component{
-    
-    constructor(props) {
-        super(props);
-    }
 
     render() {
         return (
